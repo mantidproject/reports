@@ -18,6 +18,27 @@ import settings
 OS_NAMES = ['Linux', 'Windows NT', 'Darwin']
 UTC = datetime.tzinfo('UTC')
 
+def createLocation(ipAddress):
+    """
+    if ipAddress == "127.0.0.1":
+        ipAddress = "130.246.132.176"
+         ipinfo's API has a bad JSON format for 127.0.0.1 requests.
+        This changes the loopback IP to a random address for testing.
+        Location should have IP as a unique field. Change the IP
+        or you won't be able to add the test value more than once. """
+    ipHash = hashlib.md5(ipAddress).hexdigest()
+    if len(Location.objects.all().filter(ip=ipHash)) == 0:
+        ''' check for the HASHED ip in the database. If it isn't present,
+            create a new entry with the NON-HASHED ip as an argument. '''
+        entity = Location()
+        entity.create(ip=ipAddress)
+    return ipHash
+
+class LocationViewSet(viewsets.ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 class MessageViewSet(viewsets.ModelViewSet):
   queryset = Message.objects.all()
   serializer_class = MessageSerializer
