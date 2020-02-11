@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 import os
 
 # Put here required packages
-packages = ['Django==1.11.5',
+packages = ['Django==1.11.28',
             'djangorestframework',  # was 3.6.4
             'django-filter',  # was 1.0.4
             'Markdown',
