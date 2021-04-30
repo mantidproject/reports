@@ -43,7 +43,7 @@ services:
       # Define this in .env for development mode. DO NOT USED IN PRODUCTION
       - DEBUG
 
-  nginx:
+  nginx-reports:
     restart: always
     build: ./nginx/
     env_file: .env
