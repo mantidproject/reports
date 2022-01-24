@@ -8,8 +8,11 @@ PROJECT_NAME=reports
 
 cd ${SOURCE_DIR}
 docker-compose down
-# The webdata should not really be a volume as all of the files come out of the image
-# We remove it so the next rebuild sees the most recent version of the Python code
-docker volume rm ${PROJECT_NAME}_webdata
+
+# the web data volume shouldn't really be persistent as all of the files
+# come from an image
+echo "Removing webdata volume so it is rebuilt on next startup"
+rm -r "${SOURCE_DIR}/webdata"
+
 echo "Removing external network nginx_net"
 docker network rm nginx_net
