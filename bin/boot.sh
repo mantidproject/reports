@@ -9,7 +9,7 @@ function create_external_net(){
 
 SCRIPTPATH=$(cd "$(dirname "$0")"; pwd -P)
 SOURCE_DIR=$(cd "$SCRIPTPATH" && cd .. && pwd -P)
-PROJECT_NAME=errorreports
+PROJECT_NAME=usage_reports
 
 if [[ ! -f "$SOURCE_DIR/.env" ]]; then
   echo "Please copy and configure the .env file from blank.env"
