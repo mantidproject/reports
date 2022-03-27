@@ -1,0 +1,17 @@
+# Override file to use a named Docker volume over a bind mount
+# Bind mounts can be tricky on macos/Windows with permissions
+# and are not required for development. Use this file
+# to specify a named volume mount instead
+#
+# These overrides are intended to be used for development
+# and the main compose file should work standalone using
+# a standard "docker-compose up"
+
+version: '3.2'
+services:
+  postgres:
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdata:
