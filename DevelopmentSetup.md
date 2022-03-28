@@ -26,7 +26,7 @@ Download the correct package from the
 
 **Windows Non-Admin Setup**: For Windows an extra step is necessary to be able to run Docker without administrator privileges:
 
-* In the start menu, type `mmc` to get the management console. On the right-side click run as administrator, this should prompt you for your administrator credentials.
+* In the start menu, type `mmc.` to get the management console. On the right-side click run as administrator, this should prompt you for your administrator credentials.
 * Go to `File` -> `Add Snap-In` -> `Add Local Users and Groups`. Ensure Local Computer is ticked and simply click next. It will now appear on the right hand list. Click Ok to close the dialog
 * Expand Local Users and Groups then select groups
 * Ensure you are connected to the VPN if you're off-site
