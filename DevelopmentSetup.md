@@ -151,7 +151,7 @@ not accidentally used by production. It is ignored by `.gitignore`.
 
 A blank template file is provided in [blank.env](blank.env) to aid in creation
 of a file for development. To create a local copy run the following from the
-root of this repository clone:
+root of this repository clone (use Git Bash on Windows):
 
 ```sh
 cp blank.env .env
