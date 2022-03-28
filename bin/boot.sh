@@ -16,13 +16,18 @@ if [[ ! -f "$SOURCE_DIR/.env" ]]; then
   exit 1
 fi
 
-# Create empty directories, so they are not owned by root
-mkdir -p "$SOURCE_DIR/pgdata"
-mkdir -p "$SOURCE_DIR/webdata"
+COMPOSE_ARGS="--file ${SOURCE_DIR}/docker-compose.yml"
+if [[ $OSTYPE == "msys"* ]] || [[ $OSTYPE == 'darwin'* ]]; then
+  # Use volume mounts to avoid permission issues
+  COMPOSE_ARGS="${COMPOSE_ARGS} --file ${SOURCE_DIR}/docker-compose-use-docker-volume.yml"
+else
+  # Create empty directories, so they are not owned by root
+  mkdir -p "${SOURCE_DIR}/pgdata"
+fi
 
 # Start external network
 create_external_net
 # Build services
-docker-compose ${COMPOSE_FILES} --project-name ${PROJECT_NAME} build
+docker-compose ${COMPOSE_ARGS} --project-name ${PROJECT_NAME} build
 # Bring up the stack and detach
-docker-compose ${COMPOSE_FILES} --project-name ${PROJECT_NAME} up -d
+docker-compose ${COMPOSE_ARGS} --project-name ${PROJECT_NAME} up -d
