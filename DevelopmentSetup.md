@@ -24,7 +24,7 @@ by their license agreement: <https://www.docker.com/products/docker-desktop/>.*.
 Download the correct package from the
 [Desktop section](https://docs.docker.com/engine/install/#desktop) of the Docker installation reference and install it.
 
-**Windows Notes**: For Windows an extra step is necessary to be able to run Docker without administrator privileges:
+**Windows Non-Admin Setup**: For Windows an extra step is necessary to be able to run Docker without administrator privileges:
 
 * In the start menu, type `mmc` to get the management console. On the right-side click run as administrator, this should prompt you for your administrator credentials.
 * Go to `File` -> `Add Snap-In` -> `Add Local Users and Groups`. Ensure Local Computer is ticked and simply click next. It will now appear on the right hand list. Click Ok to close the dialog
@@ -32,6 +32,8 @@ Download the correct package from the
 * Ensure you are connected to the VPN if you're off-site
 * Open the `docker-users` group and add your normal ID (i.e. not the administrator account)
 * Log off / in with that account
+
+**Windows WSL2**: Docker Desktop will prompt for installation of WSL2. Follow the link and restart your machine to complete installation.
 
 Once installed, start the desktop application from either
 Spotlight search (macOS) or Start menu (Windows).
@@ -163,7 +165,7 @@ Open the file and follow the instructions in the comments.
 
 ## Running the Server
 
-To start the server, from the root of your clone run:
+To start the server, from the root of your clone run: (use Git Bash on Windows)
 
 ```sh
 bash bin/boot.sh
