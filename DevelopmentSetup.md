@@ -24,6 +24,15 @@ by their license agreement: <https://www.docker.com/products/docker-desktop/>.*.
 Download the correct package from the
 [Desktop section](https://docs.docker.com/engine/install/#desktop) of the Docker installation reference and install it.
 
+**Windows Notes**: For Windows an extra step is necessary to be able to run Docker without administrator privileges:
+
+* In the start menu, type mmc to get the management console. On the right-side click run as administrator, this should prompt you for your administrator credentials.
+* Go to `File` -> `Add Snap-In` -> `Add Local Users and Groups`. Ensure Local Computer is ticked and simply click next. It will now appear on the right hand list. Click Ok to close the dialog
+* Expand Local Users and Groups then select groups
+* Ensure you are connected to the VPN if you're off-site
+* Open the `docker-users` group and add your normal ID (i.e. not the administrator account)
+* Log off / in with that account
+
 Once installed, start the desktop application from either
 Spotlight search (macOS) or Start menu (Windows).
 This will take a few moments.
@@ -35,6 +44,14 @@ Once started see [verifying installation](#verifying-installation).
 We recommend installing the appropriate server package for the Linux distribution from the Docker repositories. Please follow the guide in the
 [Server section](https://docs.docker.com/engine/install/#server) for your
 running distribution.
+
+To run Docker as a non-root user (recommended) add your user to the docker group:
+
+```sh
+> sudo usermod -a -G docker $USER
+```
+
+You'll need to log out and log back in for this to take effect.
 
 The installation does not come with a GUI and should be started automatically by the installation. Once installed see [verifying installation](#verifying-installation).
 
