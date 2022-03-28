@@ -122,6 +122,14 @@ See the [Linux section](https://github.com/docker/compose#where-to-get-docker-co
 of the compose installation for links to download the executable and place it
 in the right location.
 
+## Fetching the Code
+
+Clone this repository locally:
+
+```sh
+> git clone https://github.com/mantidproject/reports.git
+```
+
 ## Creating an Environment (.env) File
 
 The docker-compose configuration requires setting some environment variables
