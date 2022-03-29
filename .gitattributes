@@ -1,0 +1,2 @@
+# Django startup file must have LF line endings or the container will not start
+web/**      text eol=lf
