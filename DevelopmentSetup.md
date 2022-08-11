@@ -173,3 +173,18 @@ bash bin/boot.sh
 
 The server should be accessible via `http://localhost:<HOST_PORT>`,
 where `HOST_PORT` is the value defined in the `.env` file.
+
+## Django Admin Account
+
+To access the Django admin interface you will need to create a Django admin account.
+This needs to be done whenever a fresh database container is created, mostly when
+setting up for the first time.
+
+To create the account run:
+
+```sh
+docker-compose exec web python manage.py createsuperuser
+```
+
+and enter the requested details. Once the account has been created go to
+`http://localhost:<HOST_PORT>/admin` and login with the details you provided.
