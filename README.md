@@ -29,14 +29,3 @@ for how to setup and environment file.
 ## Getting Started
 
 To get started for development please follow the instructions in [DevelopmentSetup](DevelopmentSetup.md).
-
-## Maintenance
-
-Old error reports can be removed with the following docker command:
-
-```sh
-docker-compose exec web python manage.py removeoldreports [ndays] [--all]
-```
-
-where reports older than `ndays` are removed (default=90).
-Passing `--all` removes all reports.
