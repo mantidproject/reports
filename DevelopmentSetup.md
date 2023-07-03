@@ -189,6 +189,8 @@ docker-compose exec web python manage.py createsuperuser
 and enter the requested details. Once the account has been created go to
 `http://localhost:<HOST_PORT>/admin` and login with the details you provided.
 
+If this step fails then see section below on Troubleshooting.
+
 ## Troubleshooting
 
 If you are having problems connecting to the localhost with an obscure error code, try
@@ -203,3 +205,8 @@ command:
 bash bin/shutdown.sh
 ```
 
+If you are testing this locally and NOT on the production server you may also need to remove some persisting postgres data.
+To remove the data run the following command:
+```sh
+sudo rm -rf pgdata/
+```
