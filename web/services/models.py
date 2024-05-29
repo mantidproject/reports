@@ -87,6 +87,7 @@ class FeatureUsage(models.Model):
     internal = models.BooleanField(default=False)    # ex: "False"
     count = models.BigIntegerField()        # ex: "3"
     mantidVersion = models.CharField(max_length=32)  # ex: "3.2.20141208.1820"
+    timestamp = models.DateTimeField(auto_now_add=True)
     application = models.CharField(max_length=32)
 
     class Meta:
