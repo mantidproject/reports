@@ -29,3 +29,22 @@ for how to setup and environment file.
 ## Getting Started
 
 To get started for development please follow the instructions in [DevelopmentSetup](DevelopmentSetup.md).
+
+## Useful SQL query examples
+
+The following query will return a table containing the highest Mantid version used for each Mantid algorithm:
+
+```sql
+WITH max_versions AS (
+SELECT name, MAX(CAST(SUBSTRING("mantidVersion",1,1) AS INT)) AS major
+FROM "services_featureusage"
+WHERE "type" = 'Algorithm' AND "mantidVersion" != ''
+GROUP BY "name"
+)
+SELECT services_featureusage.name, MAX(CAST(SUBSTRING("mantidVersion",1,1) AS INT)) AS major, MAX(CAST(SUBSTRING("mantidVersion",3) AS INT)) AS minor
+FROM services_featureusage
+JOIN max_versions ON 
+services_featureusage.name = max_versions.name AND CAST(SUBSTRING(services_featureusage."mantidVersion",1,1) AS INT) = max_versions.major
+WHERE services_featureusage."mantidVersion" != ''
+GROUP BY services_featureusage.name
+```
