@@ -7,8 +7,6 @@ COPY requirements.txt /usr/src/app/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 
-#this is a test line
-
 # Startup script
 COPY run_django.sh /usr/local/bin/
 CMD ["run_django.sh"]
