@@ -141,8 +141,4 @@ if DEBUG:
 APPEND_SLASH=True
 
 #CSRF validation settings
-CSRF_TRUSTED_ORIGINS = [
-    'https://reports.mantidproject.org',
-    'http://localhost:8083',
-    'https://reports.a.staging-mantidproject.stfc.ac.uk'
-    ]
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
