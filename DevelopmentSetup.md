@@ -194,7 +194,7 @@ If this step fails then see the section below on Shutdown the Server and remove 
 
 ## Adminer database management account
 
-To access the `Adminer` database management tool, access the below URL from your web browser `http://localhost:<HOST_PORT>/adminer` and use the `DB_USER` and `DB_PASS` configured in the `.env` file as the credentials. 
+To access the `Adminer` database management tool, navigate to `http://localhost:<HOST_PORT>/adminer` in your web browser and log in using the `DB_USER` and `DB_PASS` credentials from your `.env` file.
 
 If you prefer using the command line to access the postgres database from inside the docker container first enter into the docker container in the interactive mode as below. 
 ```sh
