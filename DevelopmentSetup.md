@@ -140,8 +140,9 @@ such as
 * the port to run on
 * the name of the database user
 * the database password
+* the trusted CSRF origin URLs as appropriate. Set the trusted CSRF origin URLs according to your deployment environment. Use `http://localhost:8082` for local development or `https://reports.a.staging-mantidproject.stfc.ac.uk` for staging testing. In production, only use `https://reports.mantidproject.org`.
 
-in order to function correctly. Docker compose supports the de-facto standard
+In order to function correctly. Docker compose supports the de-facto standard
 method for setting initial environment variables: `.env files`.
 If a file called `.env` is present in the same directory as `docker-compose.yml`
 then this file is sourced and the variables contained within are exported to the
@@ -191,6 +192,19 @@ and enter the requested details. Once the account has been created go to
 
 If this step fails then see the section below on Shutdown the Server and remove postgres volume.
 
+## Adminer database management account
+
+To access the `Adminer` database management tool, navigate to `http://localhost:<HOST_PORT>/adminer` in your web browser and log in using the `DB_USER` and `DB_PASS` credentials from your `.env` file.
+
+If you prefer using the command line to access the postgres database from inside the docker container first enter into the docker container in the interactive mode as below. 
+```sh
+docker exec -it <container_name_or_id> bash
+```
+Then log into the postgres database using psql CLI tool as below
+```sh
+psql -U $DB_USER -d $DB_NAME
+```
+
 ## Shutdown the Server and remove postgres volume
 
 When finished with the server, from the root of your source directory, you can shut it down:
@@ -213,3 +227,5 @@ error message to help you debug the problem.
 
 An error about invalid credentials could be caused by persisting data from a previous
 time you have looked at this repo. To clear any persisting data, run the shutdown script.
+
+It is always recommended to check the logs of the started docker containers to observe any startup errors by running `docker logs <container_name_or_id>`

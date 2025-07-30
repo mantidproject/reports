@@ -1,6 +1,6 @@
-Django==3.2.25
-djangorestframework==3.13.1
-django-filter==2.4.0
+Django==4.1
+djangorestframework==3.15.1
+django-filter==23.5
 Markdown
 requests
 plotly

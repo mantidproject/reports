@@ -139,3 +139,6 @@ if DEBUG:
     }
 
 APPEND_SLASH=True
+
+#CSRF validation settings
+CSRF_TRUSTED_ORIGINS = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
