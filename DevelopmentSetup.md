@@ -140,7 +140,7 @@ such as
 * the port to run on
 * the name of the database user
 * the database password
-* the trusted CSRF origin URLs as appropriate. For developer testing set either http://localhost:8082 or https://reports.a.staging-mantidproject.stfc.ac.uk if testing on staging environment. But for the production usage only set this to https://reports.mantidproject.org
+* the trusted CSRF origin URLs as appropriate. Set the trusted CSRF origin URLs according to your deployment environment. Use `http://localhost:8082` for local development or `https://reports.a.staging-mantidproject.stfc.ac.uk` for staging testing. In production, only use `https://reports.mantidproject.org`.
 
 In order to function correctly. Docker compose supports the de-facto standard
 method for setting initial environment variables: `.env files`.
