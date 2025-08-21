@@ -48,3 +48,13 @@ services_featureusage.name = max_versions.name AND CAST(SUBSTRING(services_featu
 WHERE services_featureusage."mantidVersion" != ''
 GROUP BY services_featureusage.name
 ```
+
+To show a summary of the system architecture for MacOS users in 6.13.* (our first release of the Arm packages), use:
+
+```sql
+SELECT "osArch", COUNT(*) AS total
+FROM "services_usage"
+WHERE "mantidVersion" LIKE '6.13._' AND "osName" = 'Darwin'
+GROUP BY "osArch"
+ORDER BY total DESC;
+```sql
