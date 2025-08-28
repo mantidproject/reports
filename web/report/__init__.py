@@ -1,1 +1,1 @@
-import report.views
+import report.views  # noqa: F401
