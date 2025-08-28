@@ -1,8 +1,6 @@
 default_language_version:
   python: python3
 
-exclude: ^$|instrument/
-
 ci:
   autofix_prs: true
 
@@ -22,27 +20,6 @@ repos:
         exclude: conda/recipes/mantid/meta.yaml|conda/recipes/mantid-developer/meta.yaml|conda/recipes/mantidqt/meta.yaml|conda/recipes/mantiddocs/meta.yaml|conda/recipes/mantidworkbench/meta.yaml
       - id: end-of-file-fixer
         exclude: .md5$|^external/|^tools/|Testing/Tools/cxxtest
-
-  - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v20.1.8
-    hooks:
-    - id: clang-format
-      exclude: Testing/Tools/cxxtest|tools|qt/icons/resources/
-
-  - repo: https://github.com/mantidproject/pre-commit-hooks.git
-    rev: 312eb3e59ed829275f3b87ece24a04f5345a7c6b
-    hooks:
-      - id: cmake-missing-pytest-files
-        # Exclude sphinx / template file
-        exclude: test_doctest.py|python_export_maker.py
-      - id: mantid-release-note-check
-        files: docs\/source\/release\/v\d+\.\d+\.\d+\/.*\/.*\.rst
-
-  - repo: https://github.com/cheshirekow/cmake-format-precommit
-    rev: v0.6.13
-    hooks:
-    - id: cmake-format
-    #- id: cmake-lint <- not ready yet
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: v6.2.5
