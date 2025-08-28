@@ -6,31 +6,35 @@ from services.models import Message, Usage, FeatureUsage, Location
 from rest_framework import response, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
-from services.serializer import MessageSerializer, UsageSerializer, FeatureSerializer, LocationSerializer
+from services.serializer import (
+    MessageSerializer,
+    UsageSerializer,
+    FeatureSerializer,
+    LocationSerializer,
+)
 import django_filters
 from rest_framework.reverse import reverse
 from django.http import HttpResponse
 import json
 import datetime
 import hashlib
-import settings
 import services.plots as plotsfile
 
-OS_NAMES = ['Linux', 'Windows NT', 'Darwin']
-UTC = datetime.tzinfo('UTC')
+OS_NAMES = ["Linux", "Windows NT", "Darwin"]
+UTC = datetime.tzinfo("UTC")
 LOCALHOST_IP = "127.0.0.1"
 
 
 def createLocation(request):
     # Assume this is a proxied request
-    ip_addr = request.META.get('HTTP_X_FORWARDED_FOR', None)
+    ip_addr = request.META.get("HTTP_X_FORWARDED_FOR", None)
     # ipinfo's API has a bad JSON format for 127.0.0.1 requests.
     # This changes the loopback IP to a random address for testing.
     # Location should have IP as a unique field. Change the IP
     # or you won't be able to add the test value more than once.
     if ip_addr is None or ip_addr == LOCALHOST_IP:
         return None
-    ip_hash = hashlib.md5(ip_addr.encode('utf-8')).hexdigest()
+    ip_hash = hashlib.md5(ip_addr.encode("utf-8")).hexdigest()
     if len(Location.objects.all().filter(ip=ip_hash)) == 0:
         # check for the HASHED ip in the database. If it isn't present,
         # create a new entry with the NON-HASHED ip as an argument.
@@ -54,10 +58,11 @@ class MessageViewSet(viewsets.ModelViewSet):
 class WithinDateFilter(django_filters.DateFilter):
     def filter(self, queryset, value):
         from datetime import timedelta
+
         if value:
             # date_value = value.replace(hour=0, minute=0, second=0)
             filter_lookups = {
-                "%s__range" % (self.name, ): (
+                "%s__range" % (self.name,): (
                     value,
                     value + timedelta(days=1),
                 ),
@@ -78,29 +83,30 @@ class MD5Filter(django_filters.CharFilter):
 
 class UsageFilter(django_filters.FilterSet):
     date = WithinDateFilter(name="dateTime")
-    datemin = django_filters.DateFilter(name="dateTime", lookup_expr='gte')
-    datemax = django_filters.DateFilter(name="dateTime", lookup_expr='lt')
+    datemin = django_filters.DateFilter(name="dateTime", lookup_expr="gte")
+    datemax = django_filters.DateFilter(name="dateTime", lookup_expr="lt")
     uid = MD5Filter(name="uid")
     host = MD5Filter(name="host")
     ip = MD5Filter(name="ip")
 
     class Meta:
         model = Usage
-        fields = '__all__'
-        order_by = ['-dateTime']
+        fields = "__all__"
+        order_by = ["-dateTime"]
 
 
 class UsageViewSet(viewsets.ModelViewSet):
     """All usages registered in the system. Valid filter parameters are:
     'host', 'uid', 'datemin', 'datemax', and 'date'.
     """
+
     queryset = Usage.objects.all()
     serializer_class = UsageSerializer
     permission_classes = [AllowAny]
     filter_class = UsageFilter
 
     def create(self, request):
-        if request.method == 'POST':
+        if request.method == "POST":
             post_data = json.loads(request.body)
             ip_hash = createLocation(request)
 
@@ -117,7 +123,7 @@ class UsageViewSet(viewsets.ModelViewSet):
         ip = ip_hash if ip_hash is not None else ""
         osReadable = usage["osReadable"]
         application = usage["application"]
-        component = usage.get("component", '')
+        component = usage.get("component", "")
         uid = usage["uid"]
         host = usage["host"]
         dateTime = usage["dateTime"]
@@ -127,18 +133,21 @@ class UsageViewSet(viewsets.ModelViewSet):
         ParaView = usage["ParaView"]
         mantidVersion = usage["mantidVersion"]
         mantidSha1 = usage["mantidSha1"]
-        obj, created = Usage.objects.get_or_create(osReadable=osReadable,
-                                                   application=application,
-                                                   component=component,
-                                                   uid=uid, host=host,
-                                                   dateTime=dateTime,
-                                                   osName=osName,
-                                                   osArch=osArch,
-                                                   osVersion=osVersion,
-                                                   ParaView=ParaView,
-                                                   mantidVersion=mantidVersion,
-                                                   mantidSha1=mantidSha1,
-                                                   ip=ip)
+        obj, created = Usage.objects.get_or_create(
+            osReadable=osReadable,
+            application=application,
+            component=component,
+            uid=uid,
+            host=host,
+            dateTime=dateTime,
+            osName=osName,
+            osArch=osArch,
+            osVersion=osVersion,
+            ParaView=ParaView,
+            mantidVersion=mantidVersion,
+            mantidSha1=mantidSha1,
+            ip=ip,
+        )
         # obj.count += count
         obj.save()
 
@@ -151,18 +160,20 @@ def filterByDate(queryset, request=None, datemin=None, datemax=None):
         # datemax = request.data.get("datemax", datemax)
 
     if datemin:
-        queryset = django_filters.DateFilter(
-            name="dateTime", lookup_expr='gte').filter(queryset, datemin)
+        queryset = django_filters.DateFilter(name="dateTime", lookup_expr="gte").filter(
+            queryset, datemin
+        )
 
     if datemax:
-        queryset = django_filters.DateFilter(
-            name="dateTime", lookup_expr='lt').filter(queryset, datemax)
+        queryset = django_filters.DateFilter(name="dateTime", lookup_expr="lt").filter(
+            queryset, datemax
+        )
 
     return (queryset, datemin, datemax)
 
 
 def parseDate(date):
-    date = date.split('-')
+    date = date.split("-")
     date = [int(i) for i in date]
     date = datetime.date(*date)
     return date
@@ -187,21 +198,21 @@ def getDateRange(queryset, datemin=None, datemax=None):
 
 
 def prepResult(dates):
-    result = {'date': dates, 'total': [], 'other': []}
+    result = {"date": dates, "total": [], "other": []}
     for label in OS_NAMES:
         result[label] = []
     return result
 
 
 def convertResult(result):
-    mapping = {'Linux': 'linux', 'Darwin': 'mac', 'Windows NT': 'windows'}
+    mapping = {"Linux": "linux", "Darwin": "mac", "Windows NT": "windows"}
     for key in mapping.keys():
         if key in result:
             result[mapping[key]] = result.pop(key)
     return result
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def host_list(request, format=None):
     """
     List of hosts. This can be filtered with 'datemin' and 'datemax' parameters
@@ -212,16 +223,17 @@ def host_list(request, format=None):
     hosts = []
     host_names = []
     # only return the values that are actually used - sort by most recent first
-    for host in queryset.order_by("-dateTime")\
-            .values('host', 'osReadable', 'osName', 'osArch', 'osVersion', 'dateTime'):
-        if not host['host'] in host_names:
-            host_names.append(host['host'])
+    for host in queryset.order_by("-dateTime").values(
+        "host", "osReadable", "osName", "osArch", "osVersion", "dateTime"
+    ):
+        if host["host"] not in host_names:
+            host_names.append(host["host"])
             hosts.append(host)
 
     return response.Response(hosts)
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def user_list(request, format=None):
     """
     List of users. This can be filtered with 'datemin' and 'datemax' parameters
@@ -231,10 +243,9 @@ def user_list(request, format=None):
 
     uids = []
     uid_names = []
-    for uid in queryset.order_by("-dateTime")\
-            .values('uid', 'dateTime'):
-        if not uid['uid'] in uid_names:
-            uid_names.append(uid['uid'])
+    for uid in queryset.order_by("-dateTime").values("uid", "dateTime"):
+        if uid["uid"] not in uid_names:
+            uid_names.append(uid["uid"])
             uids.append(uid)
 
     return response.Response(uids)
@@ -249,7 +260,7 @@ def query_count(queryset, field):
 
 def usage_by_field(request, format=None, field=None):
     (queryset, datemin, datemax) = filterByDate(Usage.objects.all(), request)
-    dates = [d for d in queryset.datetimes('dateTime', 'day')]
+    dates = [d for d in queryset.datetimes("dateTime", "day")]
     result = prepResult(dates)
 
     for day in dates:
@@ -260,15 +271,15 @@ def usage_by_field(request, format=None, field=None):
             count = query_count(queryset_date.filter(osName=label), field)
             cumulative += count
             result[label].append(count)
-        result['total'].append(total)
+        result["total"].append(total)
         # one user can be on multiple systems
-        result['other'].append(max(0, total - cumulative))
+        result["other"].append(max(0, total - cumulative))
 
     result = convertResult(result)
 
     # make the result look like a d3.csv load
     finalResult = []
-    for i in range(len(result['date'])):
+    for i in range(len(result["date"])):
         line = {}
         for key in result.keys():
             line[key] = result[key][i]
@@ -277,40 +288,44 @@ def usage_by_field(request, format=None, field=None):
     return response.Response(finalResult)
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def usage_by_hosts(request, format=None):
-    return usage_by_field(request, format, 'host')
+    return usage_by_field(request, format, "host")
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def usage_by_users(request, format=None):
-    return usage_by_field(request, format, 'uid')
+    return usage_by_field(request, format, "uid")
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def usage_by_start(request, format=None):
     return usage_by_field(request, format)
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def api_root(request, format=None):
-    return response.Response({
-        'by':       reverse('by-root',    request=request, format=format),
-        'host':     reverse('host-list',  request=request, format=format),
-        'usage':    reverse('usage-list', request=request, format=format),
-        'user':     reverse('user-list',  request=request, format=format),
-        'feature':  reverse('featureusage-list', request=request, format=format),
-        'location': reverse('location-list',  request=request, format=format)
-    })
+    return response.Response(
+        {
+            "by": reverse("by-root", request=request, format=format),
+            "host": reverse("host-list", request=request, format=format),
+            "usage": reverse("usage-list", request=request, format=format),
+            "user": reverse("user-list", request=request, format=format),
+            "feature": reverse("featureusage-list", request=request, format=format),
+            "location": reverse("location-list", request=request, format=format),
+        }
+    )
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def by_root(request, format=None):
-    return response.Response({
-        'host': reverse('by-hosts', request=request, format=format),
-        'user': reverse('by-users', request=request, format=format),
-        'start': reverse('by-starts', request=request, format=format),
-    })
+    return response.Response(
+        {
+            "host": reverse("by-hosts", request=request, format=format),
+            "user": reverse("by-users", request=request, format=format),
+            "start": reverse("by-starts", request=request, format=format),
+        }
+    )
 
 
 class FeatureViewSet(viewsets.ModelViewSet):
@@ -318,6 +333,7 @@ class FeatureViewSet(viewsets.ModelViewSet):
     A viewset that provides the standard actions,
     apart from create which has been extended to support a multi record format.
     """
+
     queryset = FeatureUsage.objects.all()
     serializer_class = FeatureSerializer
     permission_classes = [AllowAny]
@@ -331,7 +347,7 @@ class FeatureViewSet(viewsets.ModelViewSet):
     #   {"count":1,"internal":true,"name":"LoadMuonNexus.v1","type":"Algorithm"}],
     # "mantidVersion":"3.5"}
     def create(self, request):
-        if request.method == 'POST':
+        if request.method == "POST":
             # print("Request", request.body)
             post_data = json.loads(request.body)
             version = post_data["mantidVersion"]
@@ -349,59 +365,72 @@ class FeatureViewSet(viewsets.ModelViewSet):
         internal = feature["internal"]
         type = feature["type"]
         name = feature["name"]
-        application = feature["application"] if 'application' in feature else 'mantidplot'
-        obj, created = FeatureUsage.objects.get_or_create(name=name, type=type,
-                                                          internal=internal,
-                                                          mantidVersion=version,
-                                                          defaults={'count': 0},
-                                                          application=application)
+        application = (
+            feature["application"] if "application" in feature else "mantidplot"
+        )
+        obj, created = FeatureUsage.objects.get_or_create(
+            name=name,
+            type=type,
+            internal=internal,
+            mantidVersion=version,
+            defaults={"count": 0},
+            application=application,
+        )
         obj.count += count
         obj.save()
 
 
-@cache_page(60*30)  # half-hour cache
+@cache_page(60 * 30)  # half-hour cache
 def usage_plots(request):
     barGraph = plotsfile.usages_barGraph()
     years = plotsfile.yearLinks()
     util = plotsfile.utilLinks()
-    context = {"title": "Total Startups",
-               "bar": barGraph,
-               "years": years,
-               "util": util,
-               "goback": "<a href='/uid/'>Switch to Users</a>"}
-    return render(request, 'plots.html', context=context)
+    context = {
+        "title": "Total Startups",
+        "bar": barGraph,
+        "years": years,
+        "util": util,
+        "goback": "<a href='/uid/'>Switch to Users</a>",
+    }
+    return render(request, "plots.html", context=context)
 
 
-@cache_page(60*30)  # half-hour cache
+@cache_page(60 * 30)  # half-hour cache
 def usage_year(request, year):
     pie = plotsfile.usages_pieChart(year)
     map = plotsfile.usages_mapGraph(year)
-    context = {"title": "Startups By Year",
-               "pie": pie,
-               "map": map,
-               "goback": "<a href='../'>Go Back</a>"}
-    return render(request, 'plots.html', context=context)
+    context = {
+        "title": "Startups By Year",
+        "pie": pie,
+        "map": map,
+        "goback": "<a href='../'>Go Back</a>",
+    }
+    return render(request, "plots.html", context=context)
 
 
-@cache_page(60*30)  # half-hour cache
+@cache_page(60 * 30)  # half-hour cache
 def uid_plots(request):
     barGraph = plotsfile.uids_barGraph()
     years = plotsfile.yearLinks()
     util = plotsfile.utilLinks()
-    context = {"title": "Startups By User",
-               "bar": barGraph,
-               "years": years,
-               "util": util,
-               "goback": "<a href='/usage/'>Switch to Usages</a>"}
-    return render(request, 'plots.html', context=context)
+    context = {
+        "title": "Startups By User",
+        "bar": barGraph,
+        "years": years,
+        "util": util,
+        "goback": "<a href='/usage/'>Switch to Usages</a>",
+    }
+    return render(request, "plots.html", context=context)
 
 
-@cache_page(60*30)  # half-hour cache
+@cache_page(60 * 30)  # half-hour cache
 def uid_year(request, year):
     pie = plotsfile.uids_pieChart(year)
     map = plotsfile.uids_mapGraph(year)
-    context = {"title": "Startups By User",
-               "pie": pie,
-               "map": map,
-               "goback": "<a href='../'>Go Back</a>"}
-    return render(request, 'plots.html', context=context)
+    context = {
+        "title": "Startups By User",
+        "pie": pie,
+        "map": map,
+        "goback": "<a href='../'>Go Back</a>",
+    }
+    return render(request, "plots.html", context=context)

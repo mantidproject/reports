@@ -17,33 +17,47 @@ class Location(models.Model):
     longitude = models.CharField(max_length=32)
 
     def __unicode__(self):
-        return "IP: " + self.ip + " City/Region/Country: " + self.city + "/" \
-            + self.region + "/" + self.country
+        return (
+            "IP: "
+            + self.ip
+            + " City/Region/Country: "
+            + self.city
+            + "/"
+            + self.region
+            + "/"
+            + self.country
+        )
 
     def create(self, ip):
         jsonData = requests.get("http://ipinfo.io/%s/json/" % ip).content
         apiReturn = json.loads(jsonData)
         # print('Location:', jsonData)
-        if 'loc' in apiReturn:
-            latitude, longitude = apiReturn['loc'].strip().split(',')
+        if "loc" in apiReturn:
+            latitude, longitude = apiReturn["loc"].strip().split(",")
         else:
             # default is in the Gulf of Guinea
-            latitude, longitude = ('0', '0')
-        city = apiReturn.get('city', '')
-        region = apiReturn.get('region', '')
-        country_code = apiReturn.get('country', '')
+            latitude, longitude = ("0", "0")
+        city = apiReturn.get("city", "")
+        region = apiReturn.get("region", "")
+        country_code = apiReturn.get("country", "")
         if len(country_code) > 0:
             # file taken from http://country.io/names.json
-            with open(os.path.join(settings.PROJECT_DIR, 'countrynames.json'),
-                      'r') as country_code_file:
+            with open(
+                os.path.join(settings.PROJECT_DIR, "countrynames.json"), "r"
+            ) as country_code_file:
                 country_IDs = json.loads(country_code_file.read())
                 country = country_IDs[country_code]
         else:
-            country = ''
-        ipHash = hashlib.md5(ip.encode('utf-8')).hexdigest()
-        entry = Location(ip=ipHash, city=city, region=region,
-                         country=country,
-                         longitude=longitude, latitude=latitude)
+            country = ""
+        ipHash = hashlib.md5(ip.encode("utf-8")).hexdigest()
+        entry = Location(
+            ip=ipHash,
+            city=city,
+            region=region,
+            country=country,
+            longitude=longitude,
+            latitude=latitude,
+        )
         entry.save()
 
 
@@ -63,15 +77,16 @@ class Usage(models.Model):
     host = models.CharField(max_length=32, help_text="md5 version of hostname")
     # ex: "2014-12-08T18:50:35.817942000"
     dateTime = models.DateTimeField(db_index=True)
-    osName = models.CharField(max_length=32)        # ex: "Linux"
-    osArch = models.CharField(max_length=16)        # ex: "x86_64"
+    osName = models.CharField(max_length=32)  # ex: "Linux"
+    osArch = models.CharField(max_length=16)  # ex: "x86_64"
     # ex: "3.17.4-200.fc20.x86_64"
     osVersion = models.CharField(max_length=64)
-    ParaView = models.CharField(max_length=16)      # ex: "3.98.1"
+    ParaView = models.CharField(max_length=16)  # ex: "3.98.1"
     mantidVersion = models.CharField(max_length=32)  # ex: "3.2.20141208.1820"
     # sha1 ex: "e9423bdb34b07213a69caa90913e40307c17c6cc"
     mantidSha1 = models.CharField(
-        max_length=40, help_text="sha1 for specific mantid version")
+        max_length=40, help_text="sha1 for specific mantid version"
+    )
     # ex: "Fedora 20 (Heisenbug)"
     osReadable = models.CharField(max_length=80, default="", blank=True)
     application = models.CharField(max_length=80, default="", blank=True)
@@ -81,13 +96,12 @@ class Usage(models.Model):
 
 class FeatureUsage(models.Model):
     # type ex: "Algorithm,Interface, Feature"
-    type = models.CharField(
-        max_length=32, help_text="Algorithm,Interface, Feature")
-    name = models.CharField(max_length=80)        # ex: "Rebin.v2"
-    internal = models.BooleanField(default=False)    # ex: "False"
-    count = models.BigIntegerField()        # ex: "3"
+    type = models.CharField(max_length=32, help_text="Algorithm,Interface, Feature")
+    name = models.CharField(max_length=80)  # ex: "Rebin.v2"
+    internal = models.BooleanField(default=False)  # ex: "False"
+    count = models.BigIntegerField()  # ex: "3"
     mantidVersion = models.CharField(max_length=32)  # ex: "3.2.20141208.1820"
     application = models.CharField(max_length=32)
 
     class Meta:
-        unique_together = ('mantidVersion', 'type', 'name', 'internal', 'application')
+        unique_together = ("mantidVersion", "type", "name", "internal", "application")
