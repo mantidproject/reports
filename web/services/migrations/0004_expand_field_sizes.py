@@ -6,20 +6,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('services', '0003_python2to3_conversion'),
+        ("services", "0003_python2to3_conversion"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='featureusage',
-            name='count',
+            model_name="featureusage",
+            name="count",
             field=models.BigIntegerField(),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='osVersion',
+            model_name="usage",
+            name="osVersion",
             field=models.CharField(max_length=64),
         ),
     ]

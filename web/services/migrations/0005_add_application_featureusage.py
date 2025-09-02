@@ -6,20 +6,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('services', '0004_expand_field_sizes'),
+        ("services", "0004_expand_field_sizes"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='featureusage',
-            name='application',
-            field=models.CharField(default='mantidplot', max_length=32),
+            model_name="featureusage",
+            name="application",
+            field=models.CharField(default="mantidplot", max_length=32),
             preserve_default=False,
         ),
         migrations.AlterUniqueTogether(
-            name='featureusage',
-            unique_together=set([('mantidVersion', 'type', 'name', 'internal', 'application')]),
+            name="featureusage",
+            unique_together=set(
+                [("mantidVersion", "type", "name", "internal", "application")]
+            ),
         ),
     ]

@@ -43,7 +43,7 @@ GROUP BY "name"
 )
 SELECT services_featureusage.name, MAX(CAST(SUBSTRING("mantidVersion",1,1) AS INT)) AS major, MAX(CAST(SUBSTRING("mantidVersion",3) AS INT)) AS minor
 FROM services_featureusage
-JOIN max_versions ON 
+JOIN max_versions ON
 services_featureusage.name = max_versions.name AND CAST(SUBSTRING(services_featureusage."mantidVersion",1,1) AS INT) = max_versions.major
 WHERE services_featureusage."mantidVersion" != ''
 GROUP BY services_featureusage.name

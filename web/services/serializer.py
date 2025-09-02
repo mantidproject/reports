@@ -5,14 +5,17 @@ from .models import Message, Usage, FeatureUsage, Location
 class LocationSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Location
-        fields = ('ip', 'url', 'city', 'region',
-                  'country', 'longitude', 'latitude')
+        fields = ("ip", "url", "city", "region", "country", "longitude", "latitude")
 
 
 class MessageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Message
-        fields = ('author', 'text', 'timestamp',)
+        fields = (
+            "author",
+            "text",
+            "timestamp",
+        )
 
 
 class UsageSerializer(serializers.HyperlinkedModelSerializer):
@@ -27,20 +30,44 @@ class UsageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Usage
         # fields = '__all__'
-        fields = ['osReadable', 'application', 'component', 'url', 'uid',
-                  'host', 'dateTime', 'osName', 'osArch', 'osVersion',
-                  'ParaView', 'mantidVersion', 'mantidSha1', 'ip']
+        fields = [
+            "osReadable",
+            "application",
+            "component",
+            "url",
+            "uid",
+            "host",
+            "dateTime",
+            "osName",
+            "osArch",
+            "osVersion",
+            "ParaView",
+            "mantidVersion",
+            "mantidSha1",
+            "ip",
+        ]
 
 
 class FeatureSerializer(serializers.HyperlinkedModelSerializer):
-
     class Meta:
         model = FeatureUsage
-        fields = ['url', 'type', 'name', 'internal', 'count', 'mantidVersion', 'application']
+        fields = [
+            "url",
+            "type",
+            "name",
+            "internal",
+            "count",
+            "mantidVersion",
+            "application",
+        ]
 
     def checkLength(self, value, length, label):
-        if (len(value) != length):
-            msg = "value is not consistent with %s (length %d != %d)" % (label, len(value), length)
+        if len(value) != length:
+            msg = "value is not consistent with %s (length %d != %d)" % (
+                label,
+                len(value),
+                length,
+            )
             raise serializers.ValidationError(msg)
 
     def checkHex(self, value, label):
@@ -50,7 +77,8 @@ class FeatureSerializer(serializers.HyperlinkedModelSerializer):
 
         if len(value) > 0:
             raise serializers.ValidationError(
-                "'%s' is not consistent with %s" % (original, label))
+                "'%s' is not consistent with %s" % (original, label)
+            )
 
     # def validate_uid(self, value):
     #   """uid should be an md5"""

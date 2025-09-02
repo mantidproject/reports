@@ -6,53 +6,101 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='FeatureUsage',
+            name="FeatureUsage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(help_text=b'Algorithm,Interface, Feature', max_length=32)),
-                ('name', models.CharField(max_length=80)),
-                ('internal', models.BooleanField(default=False)),
-                ('count', models.IntegerField()),
-                ('mantidVersion', models.CharField(max_length=32)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        help_text=b"Algorithm,Interface, Feature", max_length=32
+                    ),
+                ),
+                ("name", models.CharField(max_length=80)),
+                ("internal", models.BooleanField(default=False)),
+                ("count", models.IntegerField()),
+                ("mantidVersion", models.CharField(max_length=32)),
             ],
         ),
         migrations.CreateModel(
-            name='Message',
+            name="Message",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('author', models.CharField(max_length=20)),
-                ('text', models.CharField(max_length=140)),
-                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("author", models.CharField(max_length=20)),
+                ("text", models.CharField(max_length=140)),
+                ("timestamp", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
-            name='Usage',
+            name="Usage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('uid', models.CharField(help_text=b'md5 version of username', max_length=32)),
-                ('host', models.CharField(help_text=b'md5 version of hostname', max_length=32)),
-                ('dateTime', models.DateTimeField(db_index=True)),
-                ('osName', models.CharField(max_length=32)),
-                ('osArch', models.CharField(max_length=16)),
-                ('osVersion', models.CharField(max_length=32)),
-                ('ParaView', models.CharField(max_length=16)),
-                ('mantidVersion', models.CharField(max_length=32)),
-                ('mantidSha1', models.CharField(help_text=b'sha1 for specific mantid version', max_length=40)),
-                ('osReadable', models.CharField(blank=True, default=b'', max_length=80)),
-                ('application', models.CharField(blank=True, default=b'', max_length=80)),
-                ('component', models.CharField(blank=True, default=b'', max_length=80)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "uid",
+                    models.CharField(
+                        help_text=b"md5 version of username", max_length=32
+                    ),
+                ),
+                (
+                    "host",
+                    models.CharField(
+                        help_text=b"md5 version of hostname", max_length=32
+                    ),
+                ),
+                ("dateTime", models.DateTimeField(db_index=True)),
+                ("osName", models.CharField(max_length=32)),
+                ("osArch", models.CharField(max_length=16)),
+                ("osVersion", models.CharField(max_length=32)),
+                ("ParaView", models.CharField(max_length=16)),
+                ("mantidVersion", models.CharField(max_length=32)),
+                (
+                    "mantidSha1",
+                    models.CharField(
+                        help_text=b"sha1 for specific mantid version", max_length=40
+                    ),
+                ),
+                (
+                    "osReadable",
+                    models.CharField(blank=True, default=b"", max_length=80),
+                ),
+                (
+                    "application",
+                    models.CharField(blank=True, default=b"", max_length=80),
+                ),
+                ("component", models.CharField(blank=True, default=b"", max_length=80)),
             ],
         ),
         migrations.AlterUniqueTogether(
-            name='featureusage',
-            unique_together=set([('mantidVersion', 'type', 'name', 'internal')]),
+            name="featureusage",
+            unique_together=set([("mantidVersion", "type", "name", "internal")]),
         ),
     ]

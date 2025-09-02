@@ -6,50 +6,53 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('services', '0002_add_location'),
+        ("services", "0002_add_location"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='featureusage',
-            name='type',
-            field=models.CharField(help_text='Algorithm,Interface, Feature', max_length=32),
+            model_name="featureusage",
+            name="type",
+            field=models.CharField(
+                help_text="Algorithm,Interface, Feature", max_length=32
+            ),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='application',
-            field=models.CharField(blank=True, default='', max_length=80),
+            model_name="usage",
+            name="application",
+            field=models.CharField(blank=True, default="", max_length=80),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='component',
-            field=models.CharField(blank=True, default='', max_length=80),
+            model_name="usage",
+            name="component",
+            field=models.CharField(blank=True, default="", max_length=80),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='host',
-            field=models.CharField(help_text='md5 version of hostname', max_length=32),
+            model_name="usage",
+            name="host",
+            field=models.CharField(help_text="md5 version of hostname", max_length=32),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='ip',
-            field=models.CharField(blank=True, default='', max_length=32),
+            model_name="usage",
+            name="ip",
+            field=models.CharField(blank=True, default="", max_length=32),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='mantidSha1',
-            field=models.CharField(help_text='sha1 for specific mantid version', max_length=40),
+            model_name="usage",
+            name="mantidSha1",
+            field=models.CharField(
+                help_text="sha1 for specific mantid version", max_length=40
+            ),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='osReadable',
-            field=models.CharField(blank=True, default='', max_length=80),
+            model_name="usage",
+            name="osReadable",
+            field=models.CharField(blank=True, default="", max_length=80),
         ),
         migrations.AlterField(
-            model_name='usage',
-            name='uid',
-            field=models.CharField(help_text='md5 version of username', max_length=32),
+            model_name="usage",
+            name="uid",
+            field=models.CharField(help_text="md5 version of username", max_length=32),
         ),
     ]

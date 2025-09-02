@@ -6,27 +6,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('services', '0001_initial'),
+        ("services", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ip', models.CharField(max_length=32, unique=True)),
-                ('city', models.CharField(max_length=32)),
-                ('region', models.CharField(max_length=32)),
-                ('country', models.CharField(max_length=32)),
-                ('latitude', models.CharField(max_length=32)),
-                ('longitude', models.CharField(max_length=32)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("ip", models.CharField(max_length=32, unique=True)),
+                ("city", models.CharField(max_length=32)),
+                ("region", models.CharField(max_length=32)),
+                ("country", models.CharField(max_length=32)),
+                ("latitude", models.CharField(max_length=32)),
+                ("longitude", models.CharField(max_length=32)),
             ],
         ),
         migrations.AddField(
-            model_name='usage',
-            name='ip',
-            field=models.CharField(blank=True, default=b'', max_length=32),
+            model_name="usage",
+            name="ip",
+            field=models.CharField(blank=True, default=b"", max_length=32),
         ),
     ]
