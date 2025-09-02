@@ -17,9 +17,7 @@ repos:
       - id: check-xml
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: conda/recipes/mantid/meta.yaml|conda/recipes/mantid-developer/meta.yaml|conda/recipes/mantidqt/meta.yaml|conda/recipes/mantiddocs/meta.yaml|conda/recipes/mantidworkbench/meta.yaml
       - id: end-of-file-fixer
-        exclude: .md5$|^external/|^tools/|Testing/Tools/cxxtest
 
   - repo: https://github.com/rstcheck/rstcheck
     rev: v6.2.5
@@ -27,13 +25,6 @@ repos:
       - id: rstcheck
         additional_dependencies: [sphinx]
         args: ["--config", ".rstcheck.project.cfg"]
-        exclude: |
-          (?x)^(
-          ^docs/source/index.rst$| # this has a value filled in by something
-          ^docs/source/concepts/FittingMinimizersComparisonDetailed.rst| # strange ranking tags
-          ^docs/source/fitting/.*|
-          ^docs/source/techniques/.*
-          )$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.9
@@ -42,4 +33,3 @@ repos:
       - id: ruff-check
         args: [--fix, --exit-non-zero-on-fix]
       - id: ruff-format
-        exclude: scripts/templates/reference/|Testing/Tools/cxxtest
