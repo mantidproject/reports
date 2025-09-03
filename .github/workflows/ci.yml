@@ -18,7 +18,7 @@ jobs:
           python-version: 3.x
           architecture: x64
       - name: Checkout head
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
       - name: Run webtests
         run: chmod +x ./run_web_tests.sh && ./run_web_tests.sh
         env:
@@ -33,7 +33,7 @@ jobs:
           python-version: 3.x
           architecture: x64
       - name: Checkout head
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
       - name: Install flake8
         run: pip install flake8
       - name: Run flake8
