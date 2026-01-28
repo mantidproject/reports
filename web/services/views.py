@@ -160,14 +160,14 @@ def filterByDate(queryset, request=None, datemin=None, datemax=None):
         # datemax = request.data.get("datemax", datemax)
 
     if datemin:
-        queryset = django_filters.DateFilter(field_name="dateTime", lookup_expr="gte").filter(
-            queryset, datemin
-        )
+        queryset = django_filters.DateFilter(
+            field_name="dateTime", lookup_expr="gte"
+        ).filter(queryset, datemin)
 
     if datemax:
-        queryset = django_filters.DateFilter(field_name="dateTime", lookup_expr="lt").filter(
-            queryset, datemax
-        )
+        queryset = django_filters.DateFilter(
+            field_name="dateTime", lookup_expr="lt"
+        ).filter(queryset, datemax)
 
     return (queryset, datemin, datemax)
 
