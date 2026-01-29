@@ -346,7 +346,7 @@ def query(request, format=None):
     return response.Response(res)
 
 def get_parameter(request, param):
-    val = request.POST.get[param]
+    val = request.POST.get(param)
     err = ""
     if not val:
         err = f"No {param} parameter provided"
