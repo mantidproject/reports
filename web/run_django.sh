@@ -8,7 +8,7 @@ python manage.py migrate --noinput
 
 # If running in DEBUG mode add debug logging to gunicorn
 if [ -n "${DEBUG}" ]; then
-  DEBUG_ARGS="--log-level debug --capture-output"
+  DEBUG_ARGS="--log-level debug --capture-output --reload"
 else
   DEBUG_ARGS=
 fi
