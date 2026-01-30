@@ -22,7 +22,6 @@ import datetime
 import hashlib
 import services.plots as plotsfile
 from os import environ
-import re
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
 UTC = datetime.tzinfo("UTC")
@@ -331,6 +330,7 @@ def by_root(request, format=None):
         }
     )
 
+
 @api_view(("POST",))
 def query(request, format=None):
     if not verify_token(request):
@@ -338,11 +338,12 @@ def query(request, format=None):
     sql_err, sql = get_parameter(request, "sql")
     if sql_err:
         return response.Response(status=400, data=f"Invalid Parameters: {sql_err}")
-    conn=connections["readonly"]
+    conn = connections["readonly"]
     with conn.cursor() as cur:
         cur.execute(sql)
         res = cur.fetchall()
     return response.Response(res)
+
 
 def get_bearer_token(request):
     """
@@ -356,6 +357,7 @@ def get_bearer_token(request):
         return None
     return parts[1].strip() or None
 
+
 def get_parameter(request, param):
     val = request.POST.get(param)
     err = ""
@@ -363,10 +365,12 @@ def get_parameter(request, param):
         err = f"No {param} parameter provided"
     return err, val
 
+
 def verify_token(request) -> bool:
     token = get_bearer_token(request)
     secret = environ.get("QUERY_SECRET_KEY", "")
-    return token==secret
+    return token == secret
+
 
 class FeatureViewSet(viewsets.ModelViewSet):
     """
