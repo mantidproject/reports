@@ -105,7 +105,7 @@ DATABASES = {
         "OPTIONS": {
             "options": "-c default_transaction_read_only=on",
         },
-    }
+    },
 }
 
 # Internationalization
