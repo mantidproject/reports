@@ -22,6 +22,7 @@ import datetime
 import hashlib
 import services.plots as plotsfile
 from os import environ
+import re
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
 UTC = datetime.tzinfo("UTC")
@@ -332,18 +333,28 @@ def by_root(request, format=None):
 
 @api_view(("POST",))
 def query(request, format=None):
-    sql_err, sql = get_parameter(request, "sql")
-    token_err, token = get_parameter(request, "token")
-    if sql_err or token_err:
-        return response.Response(status=400, data=f"Invalid Parameters: {[x for x in [sql_err, token_err] if x]}")
-    verified = verify_token(token)
-    if not verified:
+    if not verify_token(request):
         return response.Response(status=401, data="UNAUTHORIZED")
+    sql_err, sql = get_parameter(request, "sql")
+    if sql_err:
+        return response.Response(status=400, data=f"Invalid Parameters: {sql_err}")
     conn=connections["readonly"]
     with conn.cursor() as cur:
         cur.execute(sql)
         res = cur.fetchall()
     return response.Response(res)
+
+def get_bearer_token(request):
+    """
+    Expect: Authorization: Bearer <token>
+    """
+    auth = request.headers.get("Authorization", "")
+    if not auth:
+        return None
+    parts = auth.split(None, 1)  # ["Bearer", "<token>"]
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        return None
+    return parts[1].strip() or None
 
 def get_parameter(request, param):
     val = request.POST.get(param)
@@ -352,8 +363,10 @@ def get_parameter(request, param):
         err = f"No {param} parameter provided"
     return err, val
 
-def verify_token(token):
-    return token==environ["QUERY_SECRET_KEY"]
+def verify_token(request) -> bool:
+    token = get_bearer_token(request)
+    secret = environ.get("QUERY_SECRET_KEY", "")
+    return token==secret
 
 class FeatureViewSet(viewsets.ModelViewSet):
     """
