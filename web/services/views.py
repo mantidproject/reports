@@ -335,12 +335,16 @@ def by_root(request, format=None):
 @api_view(("POST",))
 def query(request, format=None):
     if not verify_token(request):
-        return response.Response(status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED")
-    
+        return response.Response(
+            status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED"
+        )
+
     sql_err, sql = get_parameter(request, "sql")
     if sql_err:
-        return response.Response(status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {sql_err}")
-    
+        return response.Response(
+            status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {sql_err}"
+        )
+
     try:
         conn = connections["readonly"]
         with conn.cursor() as cur:
@@ -348,7 +352,9 @@ def query(request, format=None):
             res = cur.fetchall()
             return response.Response(res)
     except Exception:
-        return response.Response({"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response(
+            {"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 def get_bearer_token(request):
@@ -375,7 +381,7 @@ def verify_token(request) -> bool:
     token = get_bearer_token(request)
     secret = environ.get("QUERY_SECRET_KEY", "")
     return compare_digest(token, secret)
-    
+
 
 class FeatureViewSet(viewsets.ModelViewSet):
     """
