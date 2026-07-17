@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.cache import cache_page
 from services.models import Message, Usage, FeatureUsage, Location
-from rest_framework import response, viewsets
+from rest_framework import response, viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from services.serializer import (
@@ -22,6 +22,7 @@ import datetime
 import hashlib
 import services.plots as plotsfile
 from os import environ
+from hmac import compare_digest
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
 UTC = datetime.tzinfo("UTC")
@@ -334,15 +335,20 @@ def by_root(request, format=None):
 @api_view(("POST",))
 def query(request, format=None):
     if not verify_token(request):
-        return response.Response(status=401, data="UNAUTHORIZED")
+        return response.Response(status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED")
+    
     sql_err, sql = get_parameter(request, "sql")
     if sql_err:
-        return response.Response(status=400, data=f"Invalid Parameters: {sql_err}")
-    conn = connections["readonly"]
-    with conn.cursor() as cur:
-        cur.execute(sql)
-        res = cur.fetchall()
-    return response.Response(res)
+        return response.Response(status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {sql_err}")
+    
+    try:
+        conn = connections["readonly"]
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            res = cur.fetchall()
+            return response.Response(res)
+    except Exception:
+        return response.Response({"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 def get_bearer_token(request):
@@ -360,17 +366,16 @@ def get_bearer_token(request):
 
 def get_parameter(request, param):
     val = request.POST.get(param)
-    err = ""
-    if not val:
-        err = f"No {param} parameter provided"
-    return err, val
+    if val is None or val.strip() == "":
+        return f"No {param} parameter provided", None
+    return None, val
 
 
 def verify_token(request) -> bool:
     token = get_bearer_token(request)
     secret = environ.get("QUERY_SECRET_KEY", "")
-    return token == secret
-
+    return compare_digest(token, secret)
+    
 
 class FeatureViewSet(viewsets.ModelViewSet):
     """
