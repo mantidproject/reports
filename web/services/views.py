@@ -378,7 +378,6 @@ def get_bearer_token(request):
 def get_parameter(request, param):
     val = request.POST.get(param)
     if val is None or val.strip() == "":
-        logger.warning(f"No {param} parameter provided")
         return f"No {param} parameter provided", None
     return None, val
 
