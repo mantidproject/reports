@@ -3,7 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.decorators.cache import cache_page
 from services.models import Message, Usage, FeatureUsage, Location
-from rest_framework import response, viewsets
+from rest_framework import response, viewsets, status
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from services.serializer import (
@@ -15,10 +15,17 @@ from services.serializer import (
 import django_filters
 from rest_framework.reverse import reverse
 from django.http import HttpResponse
+from django.db import connections
+
 import json
 import datetime
 import hashlib
 import services.plots as plotsfile
+from os import environ
+from hmac import compare_digest
+import logging
+
+logger = logging.getLogger(__name__)
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
 UTC = datetime.tzinfo("UTC")
@@ -326,6 +333,71 @@ def by_root(request, format=None):
             "start": reverse("by-starts", request=request, format=format),
         }
     )
+
+
+@api_view(("POST",))
+def query(request, format=None):
+    if not verify_token(request):
+        logger.warning("Unauthorized query attempt")
+        return response.Response(
+            status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED"
+        )
+
+    param_err, sql = get_parameter(request, "sql")
+    if param_err:
+        logger.warning(f"Invalid query parameters: {param_err}")
+        return response.Response(
+            status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {param_err}"
+        )
+
+    if not sql:
+        logger.warning("No sql parameter provided")
+        return response.Response(
+            status=status.HTTP_400_BAD_REQUEST, data="No sql parameter provided"
+        )
+
+    try:
+        conn = connections["readonly"]
+        with conn.cursor() as cur:
+            cur.execute(sql)
+            res = cur.fetchall()
+            return response.Response(res)
+    except Exception:
+        logger.exception("Query execution failed")
+        return response.Response(
+            {"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+def get_bearer_token(request):
+    """
+    Expect: Authorization: Bearer <token>
+    """
+    auth = request.headers.get("Authorization", "")
+    if not auth:
+        logger.warning("No Authorization header provided")
+        return None
+    parts = auth.split(None, 1)  # ["Bearer", "<token>"]
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        logger.warning("Invalid Authorization header format")
+        return None
+    return parts[1].strip() or None
+
+
+def get_parameter(request, param):
+    val = request.POST.get(param)
+    if val is None or val.strip() == "":
+        return f"No {param} parameter provided", None
+    return None, val
+
+
+def verify_token(request) -> bool:
+    token = get_bearer_token(request)
+    secret = environ.get("QUERY_SECRET_KEY", "")
+    if not token or not secret:
+        logger.warning("Missing token or secret")
+        return False
+    return compare_digest(token, secret)
 
 
 class FeatureViewSet(viewsets.ModelViewSet):
