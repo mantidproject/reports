@@ -390,7 +390,7 @@ def verify_token(request) -> bool:
         logger.warning("Missing token or secret")
         return False
     return compare_digest(token, secret)
-    
+
 
 class FeatureViewSet(viewsets.ModelViewSet):
     """
