@@ -24,6 +24,7 @@ import services.plots as plotsfile
 from os import environ
 from hmac import compare_digest
 import logging
+
 logger = logging.getLogger(__name__)
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
@@ -338,16 +339,22 @@ def by_root(request, format=None):
 def query(request, format=None):
     if not verify_token(request):
         logger.warning("Unauthorized query attempt")
-        return response.Response(status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED")
-    
+        return response.Response(
+            status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED"
+        )
+
     param_err, sql = get_parameter(request, "sql")
     if param_err:
         logger.warning(f"Invalid query parameters: {param_err}")
-        return response.Response(status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {param_err}")
-    
+        return response.Response(
+            status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {param_err}"
+        )
+
     if not sql:
         logger.warning("No sql parameter provided")
-        return response.Response(status=status.HTTP_400_BAD_REQUEST, data="No sql parameter provided")
+        return response.Response(
+            status=status.HTTP_400_BAD_REQUEST, data="No sql parameter provided"
+        )
 
     try:
         conn = connections["readonly"]
@@ -357,7 +364,9 @@ def query(request, format=None):
             return response.Response(res)
     except Exception:
         logger.exception("Query execution failed")
-        return response.Response({"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response(
+            {"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 def get_bearer_token(request):
