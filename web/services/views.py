@@ -23,6 +23,8 @@ import hashlib
 import services.plots as plotsfile
 from os import environ
 from hmac import compare_digest
+import logging
+logger = logging.getLogger(__name__)
 
 OS_NAMES = ["Linux", "Windows NT", "Darwin"]
 UTC = datetime.tzinfo("UTC")
@@ -335,12 +337,18 @@ def by_root(request, format=None):
 @api_view(("POST",))
 def query(request, format=None):
     if not verify_token(request):
+        logger.warning("Unauthorized query attempt")
         return response.Response(status=status.HTTP_401_UNAUTHORIZED, data="UNAUTHORIZED")
     
-    sql_err, sql = get_parameter(request, "sql")
-    if sql_err:
-        return response.Response(status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {sql_err}")
+    param_err, sql = get_parameter(request, "sql")
+    if param_err:
+        logger.warning(f"Invalid query parameters: {param_err}")
+        return response.Response(status=status.HTTP_400_BAD_REQUEST, data=f"Invalid Parameters: {param_err}")
     
+    if not sql:
+        logger.warning("No sql parameter provided")
+        return response.Response(status=status.HTTP_400_BAD_REQUEST, data="No sql parameter provided")
+
     try:
         conn = connections["readonly"]
         with conn.cursor() as cur:
@@ -348,6 +356,7 @@ def query(request, format=None):
             res = cur.fetchall()
             return response.Response(res)
     except Exception:
+        logger.exception("Query execution failed")
         return response.Response({"error": "Query failed"}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -357,9 +366,11 @@ def get_bearer_token(request):
     """
     auth = request.headers.get("Authorization", "")
     if not auth:
+        logger.warning("No Authorization header provided")
         return None
     parts = auth.split(None, 1)  # ["Bearer", "<token>"]
     if len(parts) != 2 or parts[0].lower() != "bearer":
+        logger.warning("Invalid Authorization header format")
         return None
     return parts[1].strip() or None
 
@@ -367,6 +378,7 @@ def get_bearer_token(request):
 def get_parameter(request, param):
     val = request.POST.get(param)
     if val is None or val.strip() == "":
+        logger.warning(f"No {param} parameter provided")
         return f"No {param} parameter provided", None
     return None, val
 
@@ -374,6 +386,9 @@ def get_parameter(request, param):
 def verify_token(request) -> bool:
     token = get_bearer_token(request)
     secret = environ.get("QUERY_SECRET_KEY", "")
+    if not token or not secret:
+        logger.warning("Missing token or secret")
+        return False
     return compare_digest(token, secret)
     
 
