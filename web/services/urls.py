@@ -17,6 +17,7 @@ urlpatterns = [
     path("by/user", views.usage_by_users, name="by-users"),
     path("host", views.host_list, name="host-list"),
     path("user", views.user_list, name="user-list"),
+    path("query", views.query, name="query"),
     # url(r'feature', views.feature_usage, name='feature_usage'),
 ]
 

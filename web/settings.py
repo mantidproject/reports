@@ -94,7 +94,18 @@ DATABASES = {
         "PASSWORD": os.environ["DB_PASS"],
         "HOST": os.environ["DB_SERVICE"],
         "PORT": os.environ["DB_PORT"],
-    }
+    },
+    "readonly": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_RO_USER"],
+        "PASSWORD": os.environ["DB_RO_PASS"],
+        "HOST": os.environ["DB_SERVICE"],
+        "PORT": os.environ["DB_PORT"],
+        "OPTIONS": {
+            "options": "-c default_transaction_read_only=on",
+        },
+    },
 }
 
 # Internationalization
