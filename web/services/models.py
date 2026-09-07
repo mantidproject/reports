@@ -1,9 +1,10 @@
-from django.db import models
-import os
-import settings
-import json
-import requests
 import hashlib
+import json
+import os
+
+import requests
+import settings
+from django.db import models
 
 # Create your models here.
 
