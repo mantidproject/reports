@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Message, Usage, FeatureUsage, Location
+
+from .models import FeatureUsage, Location, Message, Usage
 
 
 class LocationSerializer(serializers.HyperlinkedModelSerializer):

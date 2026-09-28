@@ -1,29 +1,29 @@
+import datetime
+import hashlib
+import json
+import logging
+from hmac import compare_digest
+from os import environ
+
+import django_filters
+import services.plots as plotsfile
+from django.db import connections
+from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
 from django.views.decorators.cache import cache_page
-from services.models import Message, Usage, FeatureUsage, Location
-from rest_framework import response, viewsets, status
+from rest_framework import response, status, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.reverse import reverse
+from services.models import FeatureUsage, Location, Message, Usage
 from services.serializer import (
-    MessageSerializer,
-    UsageSerializer,
     FeatureSerializer,
     LocationSerializer,
+    MessageSerializer,
+    UsageSerializer,
 )
-import django_filters
-from rest_framework.reverse import reverse
-from django.http import HttpResponse
-from django.db import connections
-
-import json
-import datetime
-import hashlib
-import services.plots as plotsfile
-from os import environ
-from hmac import compare_digest
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -213,7 +213,7 @@ def prepResult(dates):
 
 def convertResult(result):
     mapping = {"Linux": "linux", "Darwin": "mac", "Windows NT": "windows"}
-    for key in mapping.keys():
+    for key in mapping:
         if key in result:
             result[mapping[key]] = result.pop(key)
     return result
