@@ -1,13 +1,14 @@
-from services.models import Location, Usage
-from django.db.models import Count
-from django.core.exceptions import ObjectDoesNotExist
-from collections import defaultdict
-import math
-import plotly.offline as py
-import plotly.graph_objs as go
-import pandas
 import datetime
+import math
 import random
+from collections import defaultdict
+
+import pandas
+import plotly.graph_objs as go
+import plotly.offline as py
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
+from services.models import Location, Usage
 
 start = datetime.date(2014, 1, 1)
 now = datetime.datetime.today()
